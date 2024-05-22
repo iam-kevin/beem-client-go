@@ -12,7 +12,7 @@ func TestNormalizePhoneNumber(t *testing.T) {
 	}
 
 	for input, want := range valid_inputs {
-		val, err := NewTanzania(input)
+		val, err := NewTanzaniaPhoneNumber(input)
 		if !want.Match([]byte(val.Value())) || err != nil {
 			t.Errorf("NormalizePhoneNumber(%s); got %s but want %s", input, val, want.String())
 		}

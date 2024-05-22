@@ -7,7 +7,7 @@ import (
 )
 
 // Creates a new number
-func NewTanzania(phone string) (*PhoneNumber, error) {
+func NewTanzaniaPhoneNumber(phone string) (*PhoneNumber, error) {
 	phone = strings.Replace(phone, " ", "", -1)
 
 	r, _ := regexp.Compile(`^((\+)?(255)|0)(\d{9})$`)
