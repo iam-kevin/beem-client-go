@@ -1,3 +1,3 @@
-module github.com/iam-kevin/beem-client/v1
+module github.com/iam-kevin/beem-client-go
 
 go 1.22.1
