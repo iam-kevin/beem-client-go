@@ -8,8 +8,8 @@ import (
 	"io"
 	"net/http"
 
-	"iam-kevin/beem-client"
-	"iam-kevin/beem-client/textutils"
+	"github.com/iam-kevin/beem-client/v1"
+	"github.com/iam-kevin/beem-client/v1/textutils"
 )
 
 type TextMessage struct {

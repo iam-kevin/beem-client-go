@@ -1,0 +1,15 @@
+# `beem-client-go`
+
+Unofficial client for Beem Africa purely in Go.
+
+## About
+
+This is an un-official client making it possible to perform certain tasks supports by [beem.africa](https://docs.beem.africa). Use to support the projects that I work on personally / contratually.
+
+Project is made public for anyone who might find it useful, and hoping that it's pickup up by the Tanzania OSS
+
+## Install
+
+```bash
+go get github.com/iam-kevin/beem-client
+```
