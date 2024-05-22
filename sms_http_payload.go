@@ -1,4 +1,4 @@
-package sms
+package beem
 
 type HTTPRequestSend struct {
 	SourceAddr    string      `json:"source_addr"`

@@ -1,28 +1,16 @@
 // currently, sending message via Beem channel
-package sms
+package beem
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 
-	"github.com/iam-kevin/beem-client-go"
-	"github.com/iam-kevin/beem-client-go/textutils"
+	"github.com/iam-kevin/beem-client-go/sms"
 )
-
-type TextMessage struct {
-	SenderId  string
-	Message   string
-	Recipient *textutils.PhoneNumber
-}
-
-// Sets the Sender Id to the message to send
-func (t *TextMessage) SetSenderId(senderId string) *TextMessage {
-	t.SenderId = senderId
-	return t
-}
 
 // this is the defaulty known sender
 // that's available to call the users
@@ -31,7 +19,8 @@ func (t *TextMessage) SetSenderId(senderId string) *TextMessage {
 const defaultSenderId = "INFO"
 
 // Perform action of sending a message defines by the options
-func SendTextMessage(s *beem.SmsInstance, opts TextMessage) ([]byte, error) {
+func (s *SMSInstance) SendTextMessage(opts sms.TextMessage) ([]byte, error) {
+	_, cancel := context.WithCancelCause(s.Context())
 	if opts.SenderId == "" {
 		opts.SetSenderId(defaultSenderId)
 	}
@@ -54,14 +43,14 @@ func SendTextMessage(s *beem.SmsInstance, opts TextMessage) ([]byte, error) {
 	}
 
 	output, _ := json.Marshal(msg)
-	jsonBody := bytes.NewReader(output)
 
-	req, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/send", s.ApiUrl()), jsonBody)
+	req, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/send", s.ApiUrl()), bytes.NewReader(output))
 	req.Header.Set("Authorization", fmt.Sprintf("Basic %s", s.GetRequestAuthToken()))
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := s.Client.Do(req)
 	if err != nil {
+		cancel(err)
 		return nil, err
 	}
 
