@@ -11,5 +11,5 @@ Project is made public for anyone who might find it useful, and hoping that it's
 ## Install
 
 ```bash
-go get github.com/iam-kevin/beem-client/v1
+go get github.com/iam-kevin/beem-client-go
 ```
