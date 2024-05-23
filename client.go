@@ -48,7 +48,7 @@ func DefaultEnvOptions() Options {
 	return Options{
 		ApiKey:    os.Getenv(EnvVarBeemAfricaApiKey),
 		SecretKey: os.Getenv(EnvVarBeemAfricaSecretKey),
-		ApiUrl:    defaultBeemApiUrl,
+		ApiUrl:    apiUrl,
 	}
 }
 
