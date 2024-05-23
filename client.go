@@ -22,8 +22,9 @@ type Options struct {
 // Instance of the beem application as
 // used through out the package
 type App struct {
-	url     string
-	options Options
+	apiUrl    string
+	apiKey    string
+	secretKey string
 }
 
 const (
@@ -55,34 +56,35 @@ func DefaultEnvOptions() Options {
 // Get's the Api Key associated
 // to the beem instance
 func (b *App) ApiKey() string {
-	return b.options.ApiKey
+	return b.apiKey
 }
 
 // Get's the Secret attached to the application
 func (b *App) SecretKey() string {
-	return b.options.SecretKey
+	return b.secretKey
 }
 
 // Get's the API URL expected of the instance
 // of the application
 func (b *App) ApiUrl() string {
-	return b.options.ApiUrl
+	return b.apiUrl
 }
 
 func New(opts Options) (*App, error) {
-	// setup defaults
-	url := opts.ApiUrl
-	if url == "" {
-		url = defaultBeemApiUrl
-	}
-
 	if opts.ApiKey == "" || opts.SecretKey == "" {
 		return nil, errors.New("missing configuration beem configuration for `BeemApiKey` and `BeemSecretKey`. include the options using `beem.Options` or use the `beem.EnvOptions()` helper ")
 	}
 
+	// use default of not defined
+	url := defaultBeemApiUrl
+	if opts.ApiUrl != "" {
+		url = opts.ApiUrl
+	}
+
 	return &App{
-		url:     url,
-		options: Options{},
+		apiUrl:    url,
+		apiKey:    opts.ApiKey,
+		secretKey: opts.SecretKey,
 	}, nil
 }
 
