@@ -20,7 +20,7 @@ type SMSInstance struct {
 }
 
 type SmsOptions struct {
-	client *http.Client
+	Client *http.Client
 }
 
 // default insecure client that's seem to work well
@@ -44,7 +44,7 @@ func NewSmsOptions() *SmsOptions {
 
 // Set's the HTTPClient to the SMS client
 func (op *SmsOptions) SetClient(client *http.Client) *SmsOptions {
-	op.client = client
+	op.Client = client
 	return op
 }
 
@@ -65,15 +65,16 @@ func (op *SMSInstance) ApiUrl() string {
 }
 
 // Create instance that helps manage SMS related actions / interactions
+//
+// if `opts` is nil, it default to
 func (b *App) SMS(ctx context.Context, opts *SmsOptions) *SMSInstance {
 	o := opts
 	if o == nil {
-		o = NewSmsOptions()
-		o.SetClient(defaultInsecureClient())
+		panic("sms opts required")
 	}
 
 	return &SMSInstance{
-		Client: o.client,
+		Client: o.Client,
 		b:      b,
 		ctx:    ctx,
 	}

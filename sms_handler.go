@@ -3,10 +3,10 @@ package beem
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 
 	"github.com/iam-kevin/beem-client-go/sms"
@@ -18,9 +18,25 @@ import (
 // See: https://docs.beem.africa/index.html
 const defaultSenderId = "INFO"
 
+type SMSResponse struct {
+	res *SMSHTTPResponse
+}
+
+func (s *SMSResponse) HttpResponse() *http.Response {
+	return s.res.Raw
+}
+
+type SMSHTTPResponse struct {
+	Raw *http.Response
+}
+
+func (res *SMSHTTPResponse) Body() ([]byte, error) {
+	return io.ReadAll(res.Raw.Body)
+}
+
 // Perform action of sending a message defines by the options
-func (s *SMSInstance) SendTextMessage(opts sms.TextMessage) ([]byte, error) {
-	_, cancel := context.WithCancelCause(s.Context())
+func (s *SMSInstance) SendTextMessage(opts sms.TextMessage) (*SMSResponse, error) {
+	ctx := s.Context()
 	if opts.SenderId == "" {
 		opts.SetSenderId(defaultSenderId)
 	}
@@ -44,17 +60,21 @@ func (s *SMSInstance) SendTextMessage(opts sms.TextMessage) ([]byte, error) {
 
 	output, _ := json.Marshal(msg)
 
-	req, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/send", s.ApiUrl()), bytes.NewReader(output))
+	sendUrl := fmt.Sprintf("%s/v1/send", s.ApiUrl())
+	req, _ := http.NewRequestWithContext(ctx, http.MethodPost, sendUrl, bytes.NewReader(output))
 	req.Header.Set("Authorization", fmt.Sprintf("Basic %s", s.GetRequestAuthToken()))
 	req.Header.Set("Content-Type", "application/json")
 
+	slog.Debug("making a call to url to send message", "request", req.URL, "headers", req.Header.Clone())
+
 	resp, err := s.Client.Do(req)
 	if err != nil {
-		cancel(err)
 		return nil, err
 	}
 
-	data, _ := io.ReadAll(resp.Body)
-
-	return data, nil
+	return &SMSResponse{
+		res: &SMSHTTPResponse{
+			Raw: resp,
+		},
+	}, nil
 }
